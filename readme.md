@@ -17,7 +17,6 @@ This guide walks you through:
 2. Generating mesh files
 3. Sampling point clouds from meshes
 4. Labeling sampled point clouds using geometric information
-5. Preparing data for NeRF training
 
 ---
 
@@ -38,7 +37,6 @@ pip install \
     scikit-learn \
     tqdm \
     pandas \
-    seaborn \
     plyfile \
     open3d \
     PyYAML \
@@ -64,7 +62,6 @@ pip install pyvista vtk
 1. **Generate Meshes** (e.g. STEP/STL)
 2. **Sample Point Clouds** using curvature-based sampling
 3. **Label Point Clouds** by matching points to mesh faces
-4. **Train NeRF or other models** with labeled geometric data
 
 ---
 
@@ -89,6 +86,41 @@ project/
 ## 📦 Step-by-Step Usage
 
 ### 1. Prepare Mesh Files
+
+Visit the [Fusion 360 Gallery Dataset GitHub page](https://github.com/AutodeskAILab/Fusion360GalleryDataset/tree/master) to get the `.stp` files.
+
+Then run the script:
+
+```bash
+python step_to_stl_converter.py
+```
+
+The script will:
+
+* Iterate through all `.stp` files in the `input_dir`
+* Convert each one to a binary `.stl` file
+* Save the mesh to `output_dir`
+* Skip any mesh that already exists
+
+---
+
+### ⚙️ Mesh Precision
+
+You can adjust the mesh quality by editing these parameters in the script:
+
+```python
+linear_deflection=0.025  # Smaller = more accurate mesh
+angular_deflection=0.025
+```
+
+---
+
+## 🆚 Default vs. Custom Meshes
+
+| Option         | Resolution          | Notes                                  |
+| -------------- | ------------------- | -------------------------------------- |
+| Default `.stl` | Low                 | Included in the dataset                |
+| Custom `.stl`  | Arbitrary precision | Generated with this script from `.stp` |
 
 Place your CAD mesh files (`.stl` or `.step`) into the `data/meshes/` folder:
 
