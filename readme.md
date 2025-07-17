@@ -92,7 +92,7 @@ Visit the [Fusion 360 Gallery Dataset GitHub page](https://github.com/AutodeskAI
 Then run the script:
 
 ```bash
-python step_to_stl_converter.py
+python generate_mesh_from_brep.py
 ```
 
 The script will:
@@ -136,7 +136,7 @@ mkdir -p data/meshes
 Use the provided sampling script:
 
 ```bash
-python sample_mesh_points.py data/meshes data/sampled_pcds
+python sample_mesh.py
 ```
 
 This will:
@@ -162,7 +162,7 @@ data/sampled_pcds/object1_processed.npy
 Once you have point clouds, label them using the face structure of the original CAD mesh:
 
 ```bash
-python label_pcd_points.py data/sampled_pcds data/labeled_pcds
+python label_points_via_brep.py
 ```
 
 This script will:
@@ -170,13 +170,7 @@ This script will:
 * Load each `.npy` from `sampled_pcds`
 * Match each point to its closest face (based on distance and planarity)
 * Output labeled point clouds in `data/labeled_pcds/`
-
-Example output:
-
-```
-data/labeled_pcds/object1_gt_segments.npy
-```
-
+  
 ---
 
 ### ✅ Full Example
@@ -186,10 +180,10 @@ data/labeled_pcds/object1_gt_segments.npy
 cp *.stl data/meshes/
 
 # Step 2: Sample them
-python sample_mesh_points.py data/meshes data/sampled_pcds
+python sample_mesh.py data/meshes data/sampled_pcds
 
 # Step 3: Label them
-python label_pcd_points.py data/sampled_pcds data/labeled_pcds
+python label_points_via_brep.py data/sampled_pcds data/labeled_pcds
 ```
 
 ---
