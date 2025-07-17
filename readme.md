@@ -67,7 +67,7 @@ output_dir = '/path/to/output_dir/'     # Where converted .stl files will go
 Then run the script:
 
 ```bash
-python step_to_stl_converter.py
+python generate_mesh_from_brep.py
 ```
 
 The script will:
