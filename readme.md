@@ -1,114 +1,186 @@
-Sure! Here's the complete `README.md` content as a single code block:
-
-````markdown
-# STEP to STL Mesh Conversion for Fusion 360 Gallery Dataset
-
-This repository provides a Python script to convert `.stp` (STEP) files from the [Fusion 360 Gallery Dataset](https://github.com/AutodeskAILab/Fusion360GalleryDataset) into high-precision `.stl` meshes.
+Here is the revised `README.md` with the conda environment option removed. Only manual pip-based installation is included now:
 
 ---
 
-## 📦 Dataset Overview
+````markdown
+# YouCan’tManufactureANeRF
 
-The Fusion 360 Gallery Dataset includes:
-- Parametric CAD models (B-REP format)
-- `.stp` (STEP) files
-- Default low-resolution `.stl` meshes
-
-You can either:
-- Use the default `.stl` meshes included in the dataset, or
-- Generate your own higher-precision meshes using the script provided here
+This project explores geometric understanding and labeling from CAD-derived meshes to train Neural Radiance Fields (NeRFs). It includes tools for generating mesh-based point clouds, extracting geometric features like curvature, and labeling mesh segments for supervision.
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Download the STEP Files
+This guide walks you through:
 
-Visit the [Fusion 360 Gallery Dataset GitHub page](https://github.com/AutodeskAILab/Fusion360GalleryDataset#download-links) to get the `.stp` files.
+1. Installing all dependencies
+2. Generating mesh files
+3. Sampling point clouds from meshes
+4. Labeling sampled point clouds using geometric information
+5. Preparing data for NeRF training
 
-Example:
+---
+
+## 🧩 Installation (Manual via pip)
+
+Install the required Python packages using pip:
 
 ```bash
-# Download STEP files (~14 GB)
-wget https://example.com/FusionGalleryDataset_STEP.tar.gz
-
-# Extract them to your input directory
-tar -xvzf FusionGalleryDataset_STEP.tar.gz -C /path/to/input_dir/
+pip install \
+    torch torchvision torchaudio \
+    pytorch3d \
+    numpy \
+    trimesh \
+    opencv-python \
+    imageio imageio-ffmpeg \
+    matplotlib \
+    scikit-image \
+    scikit-learn \
+    tqdm \
+    pandas \
+    seaborn \
+    plyfile \
+    open3d \
+    PyYAML \
+    pythonocc-core
 ````
 
-> 🔁 Replace the download link with the correct one from the [dataset release page](https://github.com/AutodeskAILab/Fusion360GalleryDataset/releases).
+> ✅ If you encounter issues installing `pythonocc-core`, try using conda:
+>
+> ```bash
+> conda install -c conda-forge pythonocc-core
+> ```
 
----
-
-### 2. Set Up the Python Environment
-
-This script uses [`pythonocc-core`](https://github.com/tpaviot/pythonocc-core), a Python wrapper for OpenCASCADE.
-
-```bash
-# Create and activate a virtual environment (recommended)
-python -m venv occ_env
-source occ_env/bin/activate
-
-# Install dependencies
-pip install pythonocc-core
-```
-
----
-
-### 3. Use the Conversion Script
-
-Update the script with your local paths:
-
-```python
-input_dir = '/path/to/input_dir/'       # Where your .stp files are
-output_dir = '/path/to/output_dir/'     # Where converted .stl files will go
-```
-
-Then run the script:
+Optional visualization/debugging tools:
 
 ```bash
-python generate_mesh_from_brep.py
-```
-
-The script will:
-
-* Iterate through all `.stp` files in the `input_dir`
-* Convert each one to a binary `.stl` file
-* Save the mesh to `output_dir`
-* Skip any mesh that already exists
-
----
-
-### ⚙️ Mesh Precision
-
-You can adjust the mesh quality by editing these parameters in the script:
-
-```python
-linear_deflection=0.025  # Smaller = more accurate mesh
-angular_deflection=0.025
+pip install pyvista vtk
 ```
 
 ---
 
-## 🆚 Default vs. Custom Meshes
+## 🔧 Pipeline Overview
 
-| Option         | Resolution          | Notes                                  |
-| -------------- | ------------------- | -------------------------------------- |
-| Default `.stl` | Low                 | Included in the dataset                |
-| Custom `.stl`  | Arbitrary precision | Generated with this script from `.stp` |
+1. **Generate Meshes** (e.g. STEP/STL)
+2. **Sample Point Clouds** using curvature-based sampling
+3. **Label Point Clouds** by matching points to mesh faces
+4. **Train NeRF or other models** with labeled geometric data
 
-Use custom meshes for:
+---
 
-* High-fidelity rendering
-* Simulation and analysis
-* Accurate 3D printing
+## 📁 Directory Structure
+
+Your working directory should look like this:
+
+```
+project/
+├── data/
+│   ├── meshes/             # Raw CAD/mesh files (e.g. .stl, .step)
+│   ├── sampled_pcds/       # Sampled points from meshes
+│   ├── labeled_pcds/       # Ground truth labeled point clouds
+├── generate_mesh_from_brep.py   # Sampling script
+├── sample_mesh.py     # Labeling script
+├── label_points_via_brep.py     # Labeling script
+└── README.md
+```
+
+---
+
+## 📦 Step-by-Step Usage
+
+### 1. Prepare Mesh Files
+
+Place your CAD mesh files (`.stl` or `.step`) into the `data/meshes/` folder:
+
+```bash
+mkdir -p data/meshes
+# Copy your STEP/STL files into this directory
+```
+
+---
+
+### 2. Sample Point Clouds
+
+Use the provided sampling script:
+
+```bash
+python sample_mesh_points.py data/meshes data/sampled_pcds
+```
+
+This will:
+
+* Sample high-curvature edges and uniform surface points
+* Output `.npy` files in `data/sampled_pcds/` containing:
+
+  * XYZ coordinates
+  * Normals
+  * Face indices (if available)
+  * Placeholder fields
+
+Example output:
+
+```
+data/sampled_pcds/object1_processed.npy
+```
+
+---
+
+### 3. Label Sampled Point Clouds
+
+Once you have point clouds, label them using the face structure of the original CAD mesh:
+
+```bash
+python label_pcd_points.py data/sampled_pcds data/labeled_pcds
+```
+
+This script will:
+
+* Load each `.npy` from `sampled_pcds`
+* Match each point to its closest face (based on distance and planarity)
+* Output labeled point clouds in `data/labeled_pcds/`
+
+Example output:
+
+```
+data/labeled_pcds/object1_gt_segments.npy
+```
+
+---
+
+### ✅ Full Example
+
+```bash
+# Step 1: Prepare your mesh files
+cp *.stl data/meshes/
+
+# Step 2: Sample them
+python sample_mesh_points.py data/meshes data/sampled_pcds
+
+# Step 3: Label them
+python label_pcd_points.py data/sampled_pcds data/labeled_pcds
+```
+
+---
+
+## 🔍 Notes
+
+* Curvature is computed using differential geometry approximations over k-NN neighborhoods.
+* The labeling method relies on CAD surfaces and tolerance-based matching.
+* Outputs can be extended with edge segmentation, curvature stats, or exported to `.ply` for visualization.
+
+---
+
+## 🧪 Next Steps
+
+* Train a NeRF model using the labeled point clouds as supervision
+* Visualize results using Open3D or MeshLab
+* Convert labeled `.npy` files into other 3D formats as needed
 
 ---
 
 ## 📄 License
 
-This script is provided under the MIT License.
-The Fusion 360 Gallery Dataset has its own licensing terms. Please refer to their [GitHub repo](https://github.com/AutodeskAILab/Fusion360GalleryDataset) for more information.
+[MIT License](LICENSE)
 
-```
+---
 
