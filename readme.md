@@ -3,10 +3,7 @@ Here is the revised `README.md` with the conda environment option removed. Only 
 ---
 
 ````markdown
-# YouCan’tManufactureANeRF
-
-This project explores geometric understanding and labeling from CAD-derived meshes to train Neural Radiance Fields (NeRFs). It includes tools for generating mesh-based point clouds, extracting geometric features like curvature, and labeling mesh segments for supervision.
-
+# You Can’t Manufacture A NeRF Datasets
 ---
 
 ## 🚀 Getting Started
