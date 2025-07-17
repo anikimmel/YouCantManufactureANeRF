@@ -177,13 +177,13 @@ This script will:
 
 ```bash
 # Step 1: Prepare your mesh files
-cp *.stl data/meshes/
+python generate_mesh_from_brep.py
 
 # Step 2: Sample them
-python sample_mesh.py data/meshes data/sampled_pcds
+python sample_mesh.py
 
 # Step 3: Label them
-python label_points_via_brep.py data/sampled_pcds data/labeled_pcds
+python label_points_via_brep.py
 ```
 
 ---
