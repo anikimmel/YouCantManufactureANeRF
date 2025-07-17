@@ -193,15 +193,6 @@ python label_points_via_brep.py data/sampled_pcds data/labeled_pcds
 * Curvature is computed using differential geometry approximations over k-NN neighborhoods.
 * The labeling method relies on CAD surfaces and tolerance-based matching.
 * Outputs can be extended with edge segmentation, curvature stats, or exported to `.ply` for visualization.
-
----
-
-## 🧪 Next Steps
-
-* Train a NeRF model using the labeled point clouds as supervision
-* Visualize results using Open3D or MeshLab
-* Convert labeled `.npy` files into other 3D formats as needed
-
 ---
 
 ## 📄 License
